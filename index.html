@@ -195,7 +195,7 @@
   @keyframes pulse { 50% { opacity: 0.4; } }
 
   /* ============ STATS ============ */
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
   .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; }
   .stat-label { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
   .stat-value { font-size: 26px; font-weight: 500; margin-top: 6px; letter-spacing: -0.02em; font-feature-settings: "tnum"; }
@@ -347,10 +347,100 @@
   .theme-name { font-size: 11px; font-weight: 500; color: var(--text); }
   .theme-sub { font-size: 10px; color: var(--text-3); margin-top: 1px; }
 
+  /* ============ CONNECTION PILLS (outreach) ============ */
+  .conn-pill {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 3px 10px; border-radius: 999px;
+    font-size: 11px; font-weight: 500; cursor: pointer;
+    border: 1px solid transparent;
+    background: var(--neutral-soft); color: var(--text-2);
+    white-space: nowrap; transition: all 0.15s; font-family: inherit;
+  }
+  .conn-pill:hover { border-color: var(--border-strong); }
+  .conn-pill .pill-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-2); flex-shrink: 0; }
+  .conn-pill.c-penn      { background: var(--accent-soft);  color: var(--accent); }
+  .conn-pill.c-penn      .pill-dot { background: var(--accent); }
+  .conn-pill.c-mck       { background: var(--purple-soft);  color: var(--purple); }
+  .conn-pill.c-mck       .pill-dot { background: var(--purple); }
+  .conn-pill.c-mutual    { background: var(--success-soft); color: var(--success); }
+  .conn-pill.c-mutual    .pill-dot { background: var(--success); }
+  .conn-pill.c-cold      { background: var(--warning-soft); color: var(--warning); }
+  .conn-pill.c-cold      .pill-dot { background: var(--warning); }
+  .conn-pill.c-other     { background: var(--neutral-soft); color: var(--text-2); }
+  .conn-pill.c-other     .pill-dot { background: var(--text-2); }
+
+  /* ============ FOLLOW-UP STATUS ============ */
+  .followup {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-size: 12px; font-variant-numeric: tabular-nums;
+    padding: 3px 9px; border-radius: 999px;
+    background: var(--surface-2); color: var(--text-2);
+    white-space: nowrap;
+  }
+  .followup .fu-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--text-3); flex-shrink: 0; }
+  .followup.fu-overdue { background: var(--danger-soft); color: var(--danger); }
+  .followup.fu-overdue .fu-dot { background: var(--danger); }
+  .followup.fu-due { background: var(--warning-soft); color: var(--warning); }
+  .followup.fu-due .fu-dot { background: var(--warning); }
+  .followup.fu-soon { background: var(--accent-soft); color: var(--accent); }
+  .followup.fu-soon .fu-dot { background: var(--accent); }
+  .followup.fu-none { color: var(--text-3); background: transparent; padding: 3px 0; }
+  .followup.fu-none .fu-dot { display: none; }
+
+  /* ============ EXPANDED ROW (interactions timeline) ============ */
+  tr.expanded td { background: var(--surface-2); }
+  tr.detail-row td { padding: 0; background: var(--bg); }
+  tr.detail-row:hover td { background: var(--bg); }
+  .detail-panel { padding: 18px 22px 20px; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+  .detail-section { margin-bottom: 14px; }
+  .detail-section:last-child { margin-bottom: 0; }
+  .detail-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-3); margin-bottom: 6px; }
+  .detail-text { font-size: 13px; color: var(--text); white-space: pre-wrap; line-height: 1.55; }
+  .detail-text.empty { color: var(--text-3); font-style: italic; }
+  .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 14px; }
+  @media (max-width: 720px) { .detail-grid { grid-template-columns: 1fr; gap: 10px; } }
+  .timeline { display: flex; flex-direction: column; gap: 10px; }
+  .interaction {
+    display: flex; gap: 10px; padding: 10px 12px;
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: var(--radius);
+  }
+  .interaction-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-top: 6px; flex-shrink: 0; }
+  .interaction-body { flex: 1; min-width: 0; }
+  .interaction-meta { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 3px; }
+  .interaction-date { font-size: 12px; font-weight: 600; color: var(--text); font-variant-numeric: tabular-nums; }
+  .interaction-kind {
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600;
+    padding: 1px 7px; border-radius: 3px; background: var(--surface-2); color: var(--text-2);
+  }
+  .interaction-note { font-size: 13px; color: var(--text); white-space: pre-wrap; line-height: 1.5; }
+  .interaction-actions { display: flex; gap: 4px; opacity: 0.5; transition: opacity 0.15s; }
+  .interaction:hover .interaction-actions { opacity: 1; }
+  .add-interaction { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; padding: 12px; background: var(--surface); border: 1px dashed var(--border-strong); border-radius: var(--radius); margin-top: 10px; }
+  .add-interaction input, .add-interaction select, .add-interaction textarea {
+    padding: 7px 10px; border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--surface); color: var(--text); font-size: 13px; font-family: inherit;
+  }
+  .add-interaction input[type="date"] { width: 140px; }
+  .add-interaction select { min-width: 110px; appearance: none; padding-right: 24px; background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' stroke='%23999' stroke-width='1.3' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 8px center; }
+  .add-interaction textarea { flex: 1; min-width: 200px; resize: vertical; min-height: 38px; max-height: 120px; }
+
+  /* expand chevron */
+  .expand-btn { cursor: pointer; padding: 4px 6px; border-radius: 4px; color: var(--text-3); transition: all 0.15s; }
+  .expand-btn:hover { background: var(--bg); color: var(--text); }
+  .expand-btn .icon { transition: transform 0.2s; }
+  tr.expanded .expand-btn .icon { transform: rotate(90deg); color: var(--accent); }
+
+  /* meeting link cell */
+  .meeting-cell { font-size: 12px; color: var(--text-2); min-width: 120px; }
+  .meeting-cell a { color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: 4px; }
+  .meeting-cell a:hover { text-decoration: underline; }
+
   /* ============ MOBILE ============ */
   @media (max-width: 720px) {
     .app { padding: 18px 14px 100px; }
     .stats { grid-template-columns: repeat(2, 1fr); }
+    .stat:nth-child(5) { grid-column: span 2; }
     .tabs { width: 100%; }
     .tab { flex: 1; text-align: center; justify-content: center; }
     .table-wrap { border-radius: var(--radius); }
@@ -394,6 +484,13 @@
     <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4M12 2a7 7 0 0 0-4 12.7c1 .8 1.5 1.5 1.5 2.3v1h5v-1c0-.8.5-1.5 1.5-2.3A7 7 0 0 0 12 2z"/></symbol>
     <symbol id="i-tools" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></symbol>
     <symbol id="i-palette" viewBox="0 0 24 24"><circle cx="13.5" cy="6.5" r=".5"/><circle cx="17.5" cy="10.5" r=".5"/><circle cx="8.5" cy="7.5" r=".5"/><circle cx="6.5" cy="12.5" r=".5"/><path d="M12 2a10 10 0 0 0 0 20 1.5 1.5 0 0 0 1.13-2.5 1.5 1.5 0 0 1 1.13-2.5h1.74a4 4 0 0 0 4-4 10 10 0 0 0-8-11z"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></symbol>
+    <symbol id="i-video" viewBox="0 0 24 24"><path d="m23 7-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2"/></symbol>
+    <symbol id="i-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+    <symbol id="i-edit" viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></symbol>
+    <symbol id="i-calendar" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/></symbol>
+    <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></symbol>
   </defs>
 </svg>
 
@@ -412,14 +509,16 @@
   <div class="stats">
     <div class="stat"><div class="stat-label">Active</div><div class="stat-value" id="statActive">0</div><div class="stat-sub">in pipeline</div></div>
     <div class="stat"><div class="stat-label">Interviewing</div><div class="stat-value" id="statInterview">0</div><div class="stat-sub">in progress</div></div>
+    <div class="stat"><div class="stat-label">Outreach</div><div class="stat-value" id="statOutreach">0</div><div class="stat-sub" id="statFollowups">0 follow-ups due</div></div>
     <div class="stat"><div class="stat-label">Outcomes</div><div class="stat-value" id="statOutcomes">0</div><div class="stat-sub">archived</div></div>
     <div class="stat"><div class="stat-label">Response rate</div><div class="stat-value" id="statRate">—</div><div class="stat-sub">past initial</div></div>
   </div>
 
   <div class="tabs">
     <button class="tab active" data-tab="applied" onclick="switchTab('applied')"><svg class="icon icon-sm"><use href="#i-list"/></svg>Applied</button>
+    <button class="tab" data-tab="outreach" onclick="switchTab('outreach')"><svg class="icon icon-sm"><use href="#i-users"/></svg>Outreach</button>
     <button class="tab" data-tab="outcomes" onclick="switchTab('outcomes')"><svg class="icon icon-sm"><use href="#i-archive"/></svg>Outcomes</button>
-    <button class="tab" data-tab="new" onclick="switchTab('new')"><svg class="icon icon-sm"><use href="#i-plus"/></svg>New Entry</button>
+    <button class="tab" data-tab="new" onclick="switchTab('new')"><svg class="icon icon-sm"><use href="#i-plus"/></svg>New</button>
   </div>
 
   <div id="tab-applied" class="tab-pane">
@@ -502,8 +601,61 @@
     </div>
   </div>
 
+  <div id="tab-outreach" class="tab-pane" style="display:none">
+    <div class="toolbar">
+      <div class="search"><svg class="icon icon-sm"><use href="#i-search"/></svg><input type="text" id="searchOutreach" placeholder="Search name, company, notes…" oninput="renderOutreach()" /></div>
+      <select class="filter-select" id="filterConnection" onchange="renderOutreach()">
+        <option value="">All connections</option>
+        <option value="Penn">Penn</option>
+        <option value="McKinsey">McKinsey</option>
+        <option value="Mutual contact">Mutual contact</option>
+        <option value="Cold outreach">Cold outreach</option>
+        <option value="Other">Other</option>
+      </select>
+      <select class="filter-select" id="filterFollowup" onchange="renderOutreach()">
+        <option value="">All</option>
+        <option value="overdue">Overdue follow-ups</option>
+        <option value="due">Due this week</option>
+        <option value="upcoming">Upcoming meetings</option>
+        <option value="none">No next step</option>
+      </select>
+      <select class="filter-select" id="sortByOutreach" onchange="renderOutreach()">
+        <option value="followup-asc">Soonest follow-up</option>
+        <option value="meeting-asc">Soonest meeting</option>
+        <option value="initial-desc">Newest outreach</option>
+        <option value="initial-asc">Oldest outreach</option>
+        <option value="name">Name A–Z</option>
+        <option value="company">Company A–Z</option>
+        <option value="connection">Connection type</option>
+      </select>
+      <div style="flex:1"></div>
+      <button class="btn btn-primary" onclick="switchToNewContact()"><svg class="icon icon-sm"><use href="#i-plus"/></svg>New Contact</button>
+    </div>
+    <div class="table-wrap">
+      <div class="table-scroll"><table>
+        <thead><tr>
+          <th style="width:30px"></th>
+          <th class="sortable" onclick="clickSortOutreach('name')">Name<span class="sort-arrow"></span></th>
+          <th class="sortable" onclick="clickSortOutreach('company')">Role / Company<span class="sort-arrow"></span></th>
+          <th class="sortable" onclick="clickSortOutreach('connection')">Connection<span class="sort-arrow"></span></th>
+          <th class="sortable" onclick="clickSortOutreach('followup')">Next follow-up<span class="sort-arrow"></span></th>
+          <th class="sortable hide-mobile" onclick="clickSortOutreach('meeting')">Next meeting<span class="sort-arrow"></span></th>
+          <th class="hide-mobile">LinkedIn</th>
+          <th></th>
+        </tr></thead>
+        <tbody id="outreachBody"></tbody>
+      </table></div>
+      <div class="hint"><svg class="icon icon-sm"><use href="#i-bulb"/></svg>Click the chevron to expand a row. Log every chat, DM, or follow-up inside.</div>
+    </div>
+  </div>
+
   <div id="tab-new" class="tab-pane" style="display:none">
-    <div class="form-card">
+    <div class="tabs" style="margin: 0 auto 18px; max-width:640px;">
+      <button class="tab active" data-newtype="job" onclick="switchNewType('job')"><svg class="icon icon-sm"><use href="#i-briefcase"/></svg>New Application</button>
+      <button class="tab" data-newtype="contact" onclick="switchNewType('contact')"><svg class="icon icon-sm"><use href="#i-users"/></svg>New Contact</button>
+    </div>
+
+    <div id="new-job" class="form-card">
       <h2 style="margin-top:0; margin-bottom: 4px; font-size: 18px; font-weight: 500; letter-spacing: -0.01em;">New Application</h2>
       <div style="color: var(--text-2); font-size: 13px; margin-bottom: 22px;">Log a job you've just applied to.</div>
       <div class="form-row"><label>Job Title</label><input type="text" id="f_title" placeholder="e.g. Senior Manager, Business Insights & Analytics" /></div>
@@ -526,12 +678,48 @@
         <button class="btn btn-primary" onclick="saveEntry()"><svg class="icon icon-sm"><use href="#i-save"/></svg>Save Entry</button>
       </div>
     </div>
+
+    <div id="new-contact" class="form-card" style="display:none">
+      <h2 style="margin-top:0; margin-bottom: 4px; font-size: 18px; font-weight: 500; letter-spacing: -0.01em;">New Contact</h2>
+      <div style="color: var(--text-2); font-size: 13px; margin-bottom: 22px;">Track someone you've reached out to.</div>
+      <div class="form-grid">
+        <div class="form-row"><label>Name</label><input type="text" id="c_name" placeholder="e.g. Sarah Chen" /></div>
+        <div class="form-row"><label>Connection</label>
+          <select id="c_connection">
+            <option value="Penn">Penn</option>
+            <option value="McKinsey">McKinsey</option>
+            <option value="Mutual contact">Mutual contact</option>
+            <option value="Cold outreach" selected>Cold outreach</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Title</label><input type="text" id="c_title" placeholder="e.g. Director, Commercial Analytics" /></div>
+        <div class="form-row"><label>Company</label><input type="text" id="c_company" placeholder="e.g. Komodo Health" /></div>
+      </div>
+      <div class="form-row"><label>LinkedIn URL</label><input type="text" id="c_linkedin" placeholder="https://linkedin.com/in/…" /></div>
+      <div class="form-grid">
+        <div class="form-row"><label>Date of initial outreach</label><input type="date" id="c_initial" /></div>
+        <div class="form-row"><label>Next follow-up date (optional)</label><input type="date" id="c_followup" /></div>
+      </div>
+      <div class="form-grid">
+        <div class="form-row"><label>Next meeting date (optional)</label><input type="date" id="c_meetingDate" /></div>
+        <div class="form-row"><label>Meeting link (optional)</label><input type="text" id="c_meetingLink" placeholder="Zoom / Google Meet URL" /></div>
+      </div>
+      <div class="form-row"><label>First-message note / context</label><textarea id="c_note" rows="3" placeholder="What you said in the initial reach-out, context, anything to remember…"></textarea></div>
+      <div class="form-row"><label>Other information (optional)</label><textarea id="c_other" rows="2" placeholder="Background, what they work on, mutual interests, etc."></textarea></div>
+      <div class="form-actions">
+        <button class="btn" onclick="clearContactForm()"><svg class="icon icon-sm"><use href="#i-x"/></svg>Clear</button>
+        <button class="btn btn-primary" onclick="saveContact()"><svg class="icon icon-sm"><use href="#i-save"/></svg>Save Contact</button>
+      </div>
+    </div>
   </div>
 </div>
 
 <div class="popover" id="statusPopover"></div>
 <div class="popover" id="fitPopover"></div>
-<button class="fab" onclick="switchTab('new')" aria-label="New entry"><svg class="icon"><use href="#i-plus"/></svg></button>
+<button class="fab" onclick="fabNew()" aria-label="New entry"><svg class="icon"><use href="#i-plus"/></svg></button>
 <div class="toast" id="toast"></div>
 
 <div class="modal-backdrop" id="settingsModal" onclick="if(event.target===this)closeSettings()">
@@ -556,8 +744,9 @@
 
     <h3 style="margin:0 0 10px; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-2);">Data</h3>
     <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <button class="btn" onclick="exportCSV()"><svg class="icon icon-sm"><use href="#i-download"/></svg>Export CSV</button>
-      <button class="btn" onclick="document.getElementById('importFile').click()"><svg class="icon icon-sm"><use href="#i-upload"/></svg>Import CSV</button>
+      <button class="btn" onclick="exportCSV()"><svg class="icon icon-sm"><use href="#i-download"/></svg>Export Jobs CSV</button>
+      <button class="btn" onclick="exportContactsCSV()"><svg class="icon icon-sm"><use href="#i-download"/></svg>Export Contacts CSV</button>
+      <button class="btn" onclick="document.getElementById('importFile').click()"><svg class="icon icon-sm"><use href="#i-upload"/></svg>Import Jobs CSV</button>
       <input type="file" id="importFile" accept=".csv" style="display:none" onchange="importCSV(event)" />
       <button class="btn" onclick="normalizeDates()"><svg class="icon icon-sm"><use href="#i-tools"/></svg>Normalize Dates</button>
       <button class="btn btn-danger" onclick="resetAll()"><svg class="icon icon-sm"><use href="#i-trash"/></svg>Reset All</button>
@@ -619,7 +808,20 @@ const STATUS_ORDER = {
 };
 const DATE_FIELDS = new Set(["applied", "deadline", "archivedDate"]);
 
-let state = { records: [], syncUrl: "", syncing: false };
+const CONNECTIONS = [
+  { id: "Penn", cls: "c-penn" },
+  { id: "McKinsey", cls: "c-mck" },
+  { id: "Mutual contact", cls: "c-mutual" },
+  { id: "Cold outreach", cls: "c-cold" },
+  { id: "Other", cls: "c-other" },
+];
+const CONNECTION_ORDER = { "Penn": 1, "McKinsey": 2, "Mutual contact": 3, "Cold outreach": 4, "Other": 5 };
+const INTERACTION_KINDS = ["LinkedIn DM", "Email", "Call", "Coffee chat", "Zoom", "Intro forwarded", "Follow-up", "Other"];
+const CONTACT_DATE_FIELDS = new Set(["initialDate", "followupDate", "meetingDate"]);
+
+let state = { records: [], contacts: [], syncUrl: "", syncing: false };
+let expandedContactId = null;
+let outreachSort = "followup-asc";
 
 /* ============ DATE HELPERS ============ */
 function nowIso() { return new Date().toISOString(); }
@@ -666,12 +868,16 @@ function formatDate(v) {
 function loadLocal() {
   try {
     const raw = localStorage.getItem("jobtracker_v1");
-    if (raw) { const p = JSON.parse(raw); state.records = p.records || []; }
+    if (raw) {
+      const p = JSON.parse(raw);
+      state.records = p.records || [];
+      state.contacts = p.contacts || [];
+    }
     state.syncUrl = localStorage.getItem("jobtracker_syncurl") || "";
   } catch (e) { console.error(e); }
 }
 function saveLocal() {
-  try { localStorage.setItem("jobtracker_v1", JSON.stringify({ records: state.records })); } catch (e) { console.error(e); }
+  try { localStorage.setItem("jobtracker_v1", JSON.stringify({ records: state.records, contacts: state.contacts })); } catch (e) { console.error(e); }
 }
 
 /* ============ SYNC ============ */
@@ -685,9 +891,16 @@ async function syncNow(silent = false) {
   updateSyncStatus("syncing", "Syncing…");
   try {
     const knownIds = state.records.map(r => r.id);
+    const knownContactIds = state.contacts.map(c => c.id);
     const res = await fetch(state.syncUrl, {
       method: "POST",
-      body: JSON.stringify({ action: "sync", records: state.records, knownIds }),
+      body: JSON.stringify({
+        action: "sync",
+        records: state.records,
+        knownIds,
+        contacts: state.contacts,
+        knownContactIds,
+      }),
     });
     const data = await res.json();
     if (data.records) {
@@ -695,6 +908,23 @@ async function syncNow(silent = false) {
         ["applied","deadline","archivedDate"].forEach(k => { if (r[k]) r[k] = toIsoDate(r[k]); });
       });
       state.records = data.records;
+    }
+    if (data.contacts) {
+      data.contacts.forEach(c => {
+        ["initialDate","followupDate","meetingDate"].forEach(k => { if (c[k]) c[k] = toIsoDate(c[k]); });
+        if (!Array.isArray(c.interactions)) {
+          // Apps Script may serialize interactions as JSON string in a single cell
+          if (typeof c.interactions === "string" && c.interactions.trim()) {
+            try { c.interactions = JSON.parse(c.interactions); } catch { c.interactions = []; }
+          } else {
+            c.interactions = [];
+          }
+        }
+        c.interactions.forEach(it => { if (it.date) it.date = toIsoDate(it.date); });
+      });
+      state.contacts = data.contacts;
+    }
+    if (data.records || data.contacts) {
       saveLocal();
       render();
     }
@@ -728,15 +958,33 @@ function queueSync() {
 }
 
 /* ============ TABS ============ */
+let activeTab = "applied";
+let activeNewType = "job";
 function switchTab(name) {
-  document.querySelectorAll(".tab").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
+  activeTab = name;
+  document.querySelectorAll(".tab[data-tab]").forEach(t => t.classList.toggle("active", t.dataset.tab === name));
   document.querySelectorAll(".tab-pane").forEach(p => p.style.display = "none");
   document.getElementById("tab-" + name).style.display = "block";
   if (name === "new") {
     const today = new Date().toISOString().split("T")[0];
     if (!document.getElementById("f_applied").value) document.getElementById("f_applied").value = today;
     if (!document.getElementById("f_deadline").value) document.getElementById("f_deadline").value = today;
+    if (!document.getElementById("c_initial").value) document.getElementById("c_initial").value = today;
   }
+}
+function switchNewType(type) {
+  activeNewType = type;
+  document.querySelectorAll(".tab[data-newtype]").forEach(t => t.classList.toggle("active", t.dataset.newtype === type));
+  document.getElementById("new-job").style.display     = (type === "job")     ? "block" : "none";
+  document.getElementById("new-contact").style.display = (type === "contact") ? "block" : "none";
+}
+function switchToNewContact() {
+  switchTab("new");
+  switchNewType("contact");
+}
+function fabNew() {
+  if (activeTab === "outreach") switchToNewContact();
+  else { switchTab("new"); switchNewType("job"); }
 }
 
 /* ============ NEW ENTRY ============ */
@@ -775,26 +1023,135 @@ function saveEntry() {
   switchTab("applied");
 }
 
+/* ============ NEW CONTACT ============ */
+function clearContactForm() {
+  ["c_name","c_title","c_company","c_linkedin","c_meetingLink","c_note","c_other","c_followup","c_meetingDate"].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+  document.getElementById("c_connection").value = "Cold outreach";
+  document.getElementById("c_initial").value = new Date().toISOString().split("T")[0];
+}
+function saveContact() {
+  const name = document.getElementById("c_name").value.trim();
+  if (!name) { toast("Name required"); return; }
+  const today = new Date().toISOString().split("T")[0];
+  const initialDate = document.getElementById("c_initial").value || today;
+  const firstNote = document.getElementById("c_note").value.trim();
+  const contact = {
+    id: "ct_" + Date.now() + "_" + Math.random().toString(36).slice(2,7),
+    name,
+    title: document.getElementById("c_title").value.trim(),
+    company: document.getElementById("c_company").value.trim(),
+    connection: document.getElementById("c_connection").value || "Cold outreach",
+    linkedin: document.getElementById("c_linkedin").value.trim(),
+    other: document.getElementById("c_other").value.trim(),
+    initialDate,
+    followupDate: document.getElementById("c_followup").value || "",
+    meetingDate: document.getElementById("c_meetingDate").value || "",
+    meetingLink: document.getElementById("c_meetingLink").value.trim(),
+    interactions: firstNote ? [{
+      id: "in_" + Date.now() + "_" + Math.random().toString(36).slice(2,5),
+      date: initialDate,
+      kind: "Initial outreach",
+      note: firstNote,
+    }] : [],
+    updatedAt: nowIso(),
+  };
+  state.contacts.unshift(contact);
+  saveLocal(); queueSync(); clearContactForm();
+  toast("Contact saved — " + name);
+  switchTab("outreach");
+}
+function deleteContact(id) {
+  const c = state.contacts.find(x => x.id === id);
+  if (!c) return;
+  if (!confirm(`Delete contact "${c.name}"? This removes all logged interactions.`)) return;
+  state.contacts = state.contacts.filter(x => x.id !== id);
+  if (expandedContactId === id) expandedContactId = null;
+  saveLocal(); queueSync(); renderOutreach(); renderStats();
+  toast("Contact deleted");
+}
+function toggleExpand(id) {
+  expandedContactId = (expandedContactId === id) ? null : id;
+  renderOutreach();
+}
+function addInteraction(id) {
+  const c = state.contacts.find(x => x.id === id);
+  if (!c) return;
+  const dateEl = document.getElementById("in-date-" + id);
+  const kindEl = document.getElementById("in-kind-" + id);
+  const noteEl = document.getElementById("in-note-" + id);
+  const note = (noteEl.value || "").trim();
+  if (!note) { toast("Add a note for the interaction"); noteEl.focus(); return; }
+  c.interactions = c.interactions || [];
+  c.interactions.push({
+    id: "in_" + Date.now() + "_" + Math.random().toString(36).slice(2,5),
+    date: dateEl.value || new Date().toISOString().split("T")[0],
+    kind: kindEl.value || "Other",
+    note,
+  });
+  c.updatedAt = nowIso();
+  saveLocal(); queueSync(); renderOutreach();
+  toast("Interaction logged");
+}
+function deleteInteraction(contactId, interactionId) {
+  const c = state.contacts.find(x => x.id === contactId);
+  if (!c || !c.interactions) return;
+  if (!confirm("Delete this interaction?")) return;
+  c.interactions = c.interactions.filter(it => it.id !== interactionId);
+  c.updatedAt = nowIso();
+  saveLocal(); queueSync(); renderOutreach();
+}
+function openConnectionPicker(event, id) {
+  event.stopPropagation();
+  const pop = document.getElementById("statusPopover");
+  let html = '<div class="popover-section">Connection</div>';
+  CONNECTIONS.forEach(c => {
+    html += `<button onclick="setConnection('${id}','${c.id}')"><span class="conn-pill ${c.cls}" style="cursor:default"><span class="pill-dot"></span>${c.id}</span></button>`;
+  });
+  pop.innerHTML = html;
+  positionPopover(pop, event.currentTarget);
+}
+function setConnection(id, conn) {
+  const c = state.contacts.find(x => x.id === id);
+  if (!c) return;
+  c.connection = conn;
+  c.updatedAt = nowIso();
+  document.getElementById("statusPopover").classList.remove("show");
+  saveLocal(); queueSync(); renderOutreach();
+}
+
 /* ============ INLINE EDIT ============ */
+function findEntity(id) {
+  if (id.startsWith("ct_")) {
+    const c = state.contacts.find(x => x.id === id);
+    return c ? { rec: c, kind: "contact" } : null;
+  }
+  const r = state.records.find(x => x.id === id);
+  return r ? { rec: r, kind: "record" } : null;
+}
 function startEdit(td, id, field) {
   if (td.classList.contains("editing")) return;
-  const rec = state.records.find(r => r.id === id);
-  if (!rec) return;
+  const found = findEntity(id);
+  if (!found) return;
+  const rec = found.rec;
+  const isDate = DATE_FIELDS.has(field) || CONTACT_DATE_FIELDS.has(field);
   td.classList.add("editing");
   let input = td.querySelector(".cell-input");
   if (!input) {
     input = document.createElement("input");
-    input.type = DATE_FIELDS.has(field) ? "date" : "text";
+    input.type = isDate ? "date" : "text";
     input.className = "cell-input";
     td.appendChild(input);
   }
-  input.value = DATE_FIELDS.has(field) ? toIsoDate(rec[field]) : (rec[field] || "");
+  input.value = isDate ? toIsoDate(rec[field]) : (rec[field] || "");
   input.focus();
   input.select && input.select();
   const finish = (save) => {
     if (save) {
       const newVal = input.value.trim();
-      const normalizedVal = DATE_FIELDS.has(field) ? toIsoDate(newVal) : newVal;
+      const normalizedVal = isDate ? toIsoDate(newVal) : newVal;
       if (normalizedVal !== (rec[field] || "")) {
         rec[field] = normalizedVal;
         rec.updatedAt = nowIso();
@@ -1025,8 +1382,213 @@ function renderStats() {
   document.getElementById("statInterview").textContent = interviewing;
   document.getElementById("statOutcomes").textContent = outcomes;
   document.getElementById("statRate").textContent = rate;
+  // Outreach
+  const contacts = state.contacts || [];
+  const followupsDue = contacts.filter(c => {
+    const s = followupStatus(c.followupDate);
+    return s.cls === "fu-overdue" || s.cls === "fu-due";
+  }).length;
+  document.getElementById("statOutreach").textContent = contacts.length;
+  const fu = document.getElementById("statFollowups");
+  if (fu) fu.textContent = followupsDue === 0 ? "all clear" : (followupsDue + (followupsDue === 1 ? " follow-up due" : " follow-ups due"));
 }
-function render() { renderApplied(); renderOutcomes(); renderStats(); }
+function render() { renderApplied(); renderOutcomes(); renderOutreach(); renderStats(); }
+
+/* ============ OUTREACH HELPERS ============ */
+function startOfToday() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+function daysFromToday(dateStr) {
+  if (!dateStr) return null;
+  const t = parseAnyDate(dateStr);
+  if (!t) return null;
+  return Math.round((t - startOfToday()) / 86400000);
+}
+function followupStatus(dateStr) {
+  const d = daysFromToday(dateStr);
+  if (d === null) return { cls: "fu-none", label: "—", days: null };
+  if (d < 0)   return { cls: "fu-overdue", label: `Overdue · ${formatDate(dateStr)}`, days: d };
+  if (d === 0) return { cls: "fu-due", label: `Today · ${formatDate(dateStr)}`, days: d };
+  if (d <= 7)  return { cls: "fu-due", label: `In ${d}d · ${formatDate(dateStr)}`, days: d };
+  return { cls: "fu-soon", label: formatDate(dateStr), days: d };
+}
+function meetingStatus(dateStr) {
+  const d = daysFromToday(dateStr);
+  if (d === null) return { cls: "fu-none", label: "—" };
+  if (d < 0)   return { cls: "fu-none", label: formatDate(dateStr) }; // past meeting — neutral
+  if (d === 0) return { cls: "fu-due", label: `Today · ${formatDate(dateStr)}` };
+  if (d <= 7)  return { cls: "fu-soon", label: `In ${d}d · ${formatDate(dateStr)}` };
+  return { cls: "fu-soon", label: formatDate(dateStr) };
+}
+function connectionPill(conn, id) {
+  const found = CONNECTIONS.find(c => c.id === conn) || CONNECTIONS[CONNECTIONS.length-1];
+  return `<button class="conn-pill ${found.cls}" onclick="openConnectionPicker(event, '${id}')" title="Click to change"><span class="pill-dot"></span>${escapeHtml(conn || "Other")}</button>`;
+}
+
+/* ============ OUTREACH SORT ============ */
+function sortContacts(a, b, sortBy) {
+  const BIG = 9e15;
+  switch (sortBy) {
+    case "initial-asc":  return parseAnyDate(a.initialDate) - parseAnyDate(b.initialDate);
+    case "initial-desc": return parseAnyDate(b.initialDate) - parseAnyDate(a.initialDate);
+    case "name":         return (a.name || "").localeCompare(b.name || "");
+    case "company":      return (a.company || "").localeCompare(b.company || "");
+    case "connection":   return (CONNECTION_ORDER[a.connection]||99) - (CONNECTION_ORDER[b.connection]||99);
+    case "meeting-asc": {
+      const ad = parseAnyDate(a.meetingDate) || BIG;
+      const bd = parseAnyDate(b.meetingDate) || BIG;
+      return ad - bd;
+    }
+    case "followup-asc":
+    default: {
+      const ad = parseAnyDate(a.followupDate) || BIG;
+      const bd = parseAnyDate(b.followupDate) || BIG;
+      return ad - bd;
+    }
+  }
+}
+function clickSortOutreach(field) {
+  const sel = document.getElementById("sortByOutreach");
+  const cur = sel.value;
+  let next;
+  if (field === "followup") next = "followup-asc";
+  else if (field === "meeting") next = "meeting-asc";
+  else if (field === "name") next = "name";
+  else if (field === "company") next = "company";
+  else if (field === "connection") next = "connection";
+  else next = cur;
+  sel.value = next;
+  renderOutreach();
+}
+
+/* ============ OUTREACH RENDER ============ */
+function renderOutreach() {
+  const tbody = document.getElementById("outreachBody");
+  if (!tbody) return;
+  const q = (document.getElementById("searchOutreach").value || "").toLowerCase().trim();
+  const fConn = document.getElementById("filterConnection").value;
+  const fFu = document.getElementById("filterFollowup").value;
+  const sortBy = document.getElementById("sortByOutreach").value;
+  let rows = (state.contacts || []).slice();
+  if (q) rows = rows.filter(c =>
+    (c.name||"").toLowerCase().includes(q) ||
+    (c.company||"").toLowerCase().includes(q) ||
+    (c.title||"").toLowerCase().includes(q) ||
+    (c.other||"").toLowerCase().includes(q) ||
+    (c.interactions||[]).some(it => (it.note||"").toLowerCase().includes(q))
+  );
+  if (fConn) rows = rows.filter(c => c.connection === fConn);
+  if (fFu) {
+    rows = rows.filter(c => {
+      const fu = followupStatus(c.followupDate);
+      const md = daysFromToday(c.meetingDate);
+      if (fFu === "overdue") return fu.cls === "fu-overdue";
+      if (fFu === "due")     return fu.cls === "fu-due";
+      if (fFu === "upcoming") return md !== null && md >= 0;
+      if (fFu === "none")    return !c.followupDate && !c.meetingDate;
+      return true;
+    });
+  }
+  rows.sort((a,b) => sortContacts(a, b, sortBy));
+
+  if (rows.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="8"><div class="empty"><div class="empty-icon"><svg class="icon"><use href="#i-users"/></svg></div><div class="empty-title">No contacts yet</div><div class="empty-sub">Click "New Contact" to log your first outreach.</div></div></td></tr>`;
+    return;
+  }
+
+  tbody.innerHTML = rows.map(c => {
+    const fu = followupStatus(c.followupDate);
+    const mt = meetingStatus(c.meetingDate);
+    const isExpanded = expandedContactId === c.id;
+    const interactionCount = (c.interactions || []).length;
+    const interactionBadge = interactionCount > 0 ? ` <span style="color:var(--text-3); font-size:11px; font-variant-numeric:tabular-nums;">· ${interactionCount}</span>` : "";
+    const nameCell = `<td class="title-cell editable" onclick="startEdit(this, '${c.id}', 'name')"><div class="cell-content">${escapeHtml(c.name || "—")}${interactionBadge}</div></td>`;
+    const roleCompany = (c.title || c.company)
+      ? `<div style="line-height:1.35;"><div>${escapeHtml(c.title || "—")}</div><div style="color:var(--text-3); font-size:12px;">${escapeHtml(c.company || "")}</div></div>`
+      : "—";
+    const roleCell = `<td class="editable" onclick="startEdit(this, '${c.id}', 'company')"><div class="cell-content">${roleCompany}</div></td>`;
+    const fuLabel = c.followupDate ? fu.label : "Set follow-up";
+    const fuCell = `<td class="editable" onclick="startEdit(this, '${c.id}', 'followupDate')"><div class="cell-content"><span class="followup ${fu.cls}"><span class="fu-dot"></span>${escapeHtml(fuLabel)}</span></div></td>`;
+    const mtCell = c.meetingDate
+      ? `<td class="editable hide-mobile" onclick="startEdit(this, '${c.id}', 'meetingDate')"><div class="cell-content"><span class="followup ${mt.cls}"><span class="fu-dot"></span>${escapeHtml(mt.label)}</span></div></td>`
+      : `<td class="editable hide-mobile" onclick="startEdit(this, '${c.id}', 'meetingDate')"><div class="cell-content" style="color:var(--text-3)">—</div></td>`;
+    const linkedinCell = c.linkedin
+      ? `<td class="hide-mobile"><a class="link-btn" href="${escapeHtml(c.linkedin)}" target="_blank" rel="noopener"><svg class="icon icon-sm"><use href="#i-external"/></svg>Profile</a></td>`
+      : `<td class="hide-mobile editable" onclick="startEdit(this, '${c.id}', 'linkedin')"><div class="cell-content" style="color:var(--text-3)">—</div></td>`;
+
+    let row = `<tr class="${isExpanded ? 'expanded' : ''}">
+      <td><span class="expand-btn" onclick="toggleExpand('${c.id}')"><svg class="icon icon-sm"><use href="#i-chevron-right"/></svg></span></td>
+      ${nameCell}
+      ${roleCell}
+      <td>${connectionPill(c.connection, c.id)}</td>
+      ${fuCell}
+      ${mtCell}
+      ${linkedinCell}
+      <td><div class="row-actions"><button class="icon-btn danger" onclick="deleteContact('${c.id}')" title="Delete"><svg class="icon icon-sm"><use href="#i-trash"/></svg></button></div></td>
+    </tr>`;
+
+    if (isExpanded) row += renderContactDetail(c);
+    return row;
+  }).join("");
+}
+
+function renderContactDetail(c) {
+  const interactions = (c.interactions || []).slice().sort((a,b) => parseAnyDate(b.date) - parseAnyDate(a.date));
+  const today = new Date().toISOString().split("T")[0];
+  const kindOptions = INTERACTION_KINDS.map(k => `<option value="${k}">${k}</option>`).join("");
+  const meetingLinkBlock = c.meetingLink
+    ? `<a href="${escapeHtml(c.meetingLink)}" target="_blank" rel="noopener" class="link-btn"><svg class="icon icon-sm"><use href="#i-video"/></svg>Join meeting</a>`
+    : `<span class="editable" onclick="startEdit(this.parentElement, '${c.id}', 'meetingLink')" style="color:var(--text-3); cursor:text">Add meeting link…</span>`;
+
+  return `<tr class="detail-row"><td colspan="8"><div class="detail-panel">
+    <div class="detail-grid">
+      <div class="detail-section">
+        <div class="detail-label">Initial outreach</div>
+        <div class="detail-text editable" onclick="startEdit(this.parentElement, '${c.id}', 'initialDate')">${escapeHtml(formatDate(c.initialDate))}</div>
+      </div>
+      <div class="detail-section">
+        <div class="detail-label">Meeting link</div>
+        <div class="detail-text">${meetingLinkBlock}</div>
+      </div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-label">Other information</div>
+      <div class="detail-text editable ${c.other ? '' : 'empty'}" onclick="startEdit(this.parentElement, '${c.id}', 'other')">${escapeHtml(c.other || "Click to add background, mutual interests, etc.")}</div>
+    </div>
+
+    <div class="detail-section">
+      <div class="detail-label">Interactions (${interactions.length})</div>
+      <div class="timeline">
+        ${interactions.length === 0
+          ? `<div style="font-size:13px; color:var(--text-3); padding:6px 2px;">No interactions logged yet — add one below.</div>`
+          : interactions.map(it => `
+            <div class="interaction">
+              <div class="interaction-dot"></div>
+              <div class="interaction-body">
+                <div class="interaction-meta">
+                  <span class="interaction-date">${escapeHtml(formatDate(it.date))}</span>
+                  <span class="interaction-kind">${escapeHtml(it.kind || "Other")}</span>
+                </div>
+                <div class="interaction-note">${escapeHtml(it.note || "")}</div>
+              </div>
+              <div class="interaction-actions">
+                <button class="icon-btn danger" onclick="deleteInteraction('${c.id}','${it.id}')" title="Delete"><svg class="icon icon-sm"><use href="#i-trash"/></svg></button>
+              </div>
+            </div>`).join("")
+        }
+      </div>
+      <div class="add-interaction">
+        <input type="date" id="in-date-${c.id}" value="${today}" />
+        <select id="in-kind-${c.id}">${kindOptions}</select>
+        <textarea id="in-note-${c.id}" rows="1" placeholder="What happened? Topics discussed, next steps…"></textarea>
+        <button class="btn btn-primary btn-sm" onclick="addInteraction('${c.id}')"><svg class="icon icon-sm"><use href="#i-plus"/></svg>Add</button>
+      </div>
+    </div>
+  </div></td></tr>`;
+}
 
 /* ============ SETTINGS / DATA ============ */
 function openSettings() {
@@ -1042,6 +1604,18 @@ function exportCSV() {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url; a.download = "job-tracker-" + new Date().toISOString().split("T")[0] + ".csv";
+  a.click(); URL.revokeObjectURL(url);
+}
+function exportContactsCSV() {
+  const headers = ["id","name","title","company","connection","linkedin","initialDate","followupDate","meetingDate","meetingLink","other","interactions","updatedAt"];
+  const csv = [headers.join(",")].concat((state.contacts||[]).map(c => headers.map(h => {
+    if (h === "interactions") return csvCell(JSON.stringify(c.interactions || []));
+    return csvCell(c[h]);
+  }).join(","))).join("\n");
+  const blob = new Blob([csv], { type: "text/csv" });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url; a.download = "outreach-" + new Date().toISOString().split("T")[0] + ".csv";
   a.click(); URL.revokeObjectURL(url);
 }
 function csvCell(v) {
@@ -1106,13 +1680,27 @@ function normalizeDates() {
       }
     });
   });
+  (state.contacts || []).forEach(c => {
+    ["initialDate","followupDate","meetingDate"].forEach(k => {
+      if (c[k]) {
+        const norm = toIsoDate(c[k]);
+        if (norm && norm !== c[k]) { c[k] = norm; n++; }
+      }
+    });
+    (c.interactions || []).forEach(it => {
+      if (it.date) {
+        const norm = toIsoDate(it.date);
+        if (norm && norm !== it.date) { it.date = norm; n++; }
+      }
+    });
+  });
   saveLocal(); queueSync(); render();
   toast(`Normalized ${n} date fields`);
 }
 function resetAll() {
-  if (!confirm("Reset ALL data?")) return;
+  if (!confirm("Reset ALL data? (Applications AND outreach contacts)")) return;
   if (!confirm("Really sure?")) return;
-  state.records = []; saveLocal(); queueSync(); render(); toast("Reset");
+  state.records = []; state.contacts = []; saveLocal(); queueSync(); render(); toast("Reset");
 }
 
 /* ============ TOAST ============ */
@@ -1136,6 +1724,8 @@ function init() {
   const today = new Date().toISOString().split("T")[0];
   document.getElementById("f_applied").value = today;
   document.getElementById("f_deadline").value = today;
+  const ci = document.getElementById("c_initial");
+  if (ci) ci.value = today;
   updateFitDisplay();
   render();
 }
