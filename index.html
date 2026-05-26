@@ -195,7 +195,7 @@
   @keyframes pulse { 50% { opacity: 0.4; } }
 
   /* ============ STATS ============ */
-  .stats { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 24px; }
+  .stats { display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-bottom: 24px; }
   .stat { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 18px; }
   .stat-label { font-size: 11px; color: var(--text-2); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; }
   .stat-value { font-size: 26px; font-weight: 500; margin-top: 6px; letter-spacing: -0.02em; font-feature-settings: "tnum"; }
@@ -276,10 +276,16 @@
   .status-pill.s-offer .pill-dot { background: var(--success); }
   .status-pill.s-accepted { background: var(--success); color: var(--surface); }
   .status-pill.s-accepted .pill-dot { background: var(--surface); }
-  .status-pill.s-declined { background: var(--danger-soft); color: var(--danger); }
-  .status-pill.s-declined .pill-dot { background: var(--danger); }
+  .status-pill.s-rejected { background: var(--danger-soft); color: var(--danger); }
+  .status-pill.s-rejected .pill-dot { background: var(--danger); }
+  .status-pill.s-declined { background: var(--neutral-soft); color: var(--text-2); border-color: var(--border-strong); }
+  .status-pill.s-declined .pill-dot { background: var(--text-2); }
   .status-pill.s-withdrew { background: var(--neutral-soft); color: var(--text-2); }
   .status-pill.s-withdrew .pill-dot { background: var(--text-2); }
+
+  /* ============ STATUS CELL WITH SUBTITLE ============ */
+  .status-cell-stack { display: inline-flex; flex-direction: column; gap: 2px; align-items: flex-start; }
+  .status-substage { font-size: 10px; color: var(--text-3); letter-spacing: 0.02em; padding-left: 2px; font-weight: 500; }
 
   /* ============ FIT RATING ============ */
   .fit-cell { cursor: pointer; }
@@ -440,7 +446,7 @@
   @media (max-width: 720px) {
     .app { padding: 18px 14px 100px; }
     .stats { grid-template-columns: repeat(2, 1fr); }
-    .stat:nth-child(5) { grid-column: span 2; }
+    .stat:nth-child(6) { grid-column: span 2; }
     .tabs { width: 100%; }
     .tab { flex: 1; text-align: center; justify-content: center; }
     .table-wrap { border-radius: var(--radius); }
@@ -511,7 +517,8 @@
     <div class="stat"><div class="stat-label">Interviewing</div><div class="stat-value" id="statInterview">0</div><div class="stat-sub">in progress</div></div>
     <div class="stat"><div class="stat-label">Outreach</div><div class="stat-value" id="statOutreach">0</div><div class="stat-sub" id="statFollowups">0 follow-ups due</div></div>
     <div class="stat"><div class="stat-label">Outcomes</div><div class="stat-value" id="statOutcomes">0</div><div class="stat-sub">archived</div></div>
-    <div class="stat"><div class="stat-label">Response rate</div><div class="stat-value" id="statRate">—</div><div class="stat-sub">past initial</div></div>
+    <div class="stat"><div class="stat-label">Response rate</div><div class="stat-value" id="statRate">—</div><div class="stat-sub" id="statRateSub">past initial</div></div>
+    <div class="stat"><div class="stat-label">Interview rate</div><div class="stat-value" id="statInterviewRate">—</div><div class="stat-sub" id="statInterviewRateSub">reached interview</div></div>
   </div>
 
   <div class="tabs">
@@ -569,6 +576,7 @@
       <div class="search"><svg class="icon icon-sm"><use href="#i-search"/></svg><input type="text" id="searchOutcomes" placeholder="Search outcomes…" oninput="renderOutcomes()" /></div>
       <select class="filter-select" id="filterOutcome" onchange="renderOutcomes()">
         <option value="">All outcomes</option>
+        <option value="Rejected">Rejected</option>
         <option value="Job declined">Job declined</option>
         <option value="Withdrew">Withdrew</option>
         <option value="Accepted">Accepted</option>
@@ -797,6 +805,7 @@ const STATUSES = [
   { id: "Offer", cls: "s-offer" },
 ];
 const OUTCOMES = [
+  { id: "Rejected", cls: "s-rejected" },
   { id: "Job declined", cls: "s-declined" },
   { id: "Withdrew", cls: "s-withdrew" },
   { id: "Accepted", cls: "s-accepted" },
@@ -804,7 +813,17 @@ const OUTCOMES = [
 const STATUS_ORDER = {
   "Initial application": 1, "Screening": 2,
   "Interview round 1": 3, "Interview round 2": 4, "Interview round 3": 5,
-  "Final round": 6, "Offer": 7, "Accepted": 8, "Withdrew": 9, "Job declined": 10,
+  "Final round": 6, "Offer": 7, "Accepted": 8, "Withdrew": 9, "Rejected": 10, "Job declined": 11,
+};
+// Stages from which a rejection can happen, plus short labels for the subtitle
+const STAGE_SHORT = {
+  "Initial application": "after Initial",
+  "Screening": "after Screening",
+  "Interview round 1": "after Interview R1",
+  "Interview round 2": "after Interview R2",
+  "Interview round 3": "after Interview R3",
+  "Final round": "after Final round",
+  "Offer": "after Offer",
 };
 const DATE_FIELDS = new Set(["applied", "deadline", "archivedDate"]);
 
@@ -862,6 +881,30 @@ function formatDate(v) {
   }
   if (isNaN(d.getTime())) return String(v);
   return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
+}
+
+/* ============ MIGRATION ============ */
+// Old records had only "Job declined" doing double duty. On first load after the
+// upgrade, give every legacy "Job declined" a rejectedAtStage so the rejection-
+// stage info isn't lost; the user can recategorize manually as needed.
+function migrateRecords() {
+  let touched = 0;
+  state.records.forEach(r => {
+    if (!r) return;
+    // If a record has been rejected (or used the legacy "Job declined" label) but
+    // we have no stage info, default to "Initial application" — the safest guess
+    // for unannotated history, and the one that won't artificially inflate stats.
+    if ((r.status === "Rejected" || r.status === "Job declined") && !r.rejectedAtStage) {
+      r.rejectedAtStage = "Initial application";
+      touched++;
+    }
+  });
+  if (touched > 0) {
+    saveLocal();
+    // Don't queueSync here — we don't want to overwrite the cloud copy until the
+    // user has a chance to review. They can trigger sync manually if they want.
+    setTimeout(() => toast(`Migrated ${touched} legacy record${touched===1?"":"s"} — edit rejection stages if needed`), 800);
+  }
 }
 
 /* ============ STORAGE ============ */
@@ -1015,6 +1058,7 @@ function saveEntry() {
     notes: document.getElementById("f_notes").value.trim(),
     fit: +document.getElementById("f_fit").value,
     status: "Initial application", archived: false, archivedDate: "",
+    rejectedAtStage: "",
     updatedAt: nowIso(),
   };
   state.records.unshift(rec);
@@ -1193,6 +1237,14 @@ function openStatusPicker(event, id) {
   } else {
     html += '<div class="popover-section">Outcome</div>';
     OUTCOMES.forEach(s => { html += `<button onclick="setStatus('${id}', '${s.id}', true)"><span class="status-pill ${s.cls}" style="cursor:default; padding:2px 8px"><span class="pill-dot"></span>${s.id}</span></button>`; });
+    // If currently rejected, offer a sub-picker to change the rejection stage
+    if (rec.status === "Rejected") {
+      html += '<div class="popover-section">Rejected at stage</div>';
+      Object.keys(STAGE_SHORT).forEach(stg => {
+        const isCurrent = rec.rejectedAtStage === stg;
+        html += `<button onclick="setRejectedStage('${id}','${stg}')" style="${isCurrent ? 'background:var(--surface-2);' : ''}"><span style="font-size:12px; color:var(--text-2);">${stg}</span>${isCurrent ? '<svg class="icon icon-sm" style="margin-left:auto; color:var(--accent)"><use href="#i-check"/></svg>' : ''}</button>`;
+      });
+    }
     html += '<div style="border-top:1px solid var(--border); margin:6px 0;"></div>';
     html += `<button onclick="restoreToApplied('${id}')"><svg class="icon icon-sm" style="color:var(--accent)"><use href="#i-undo"/></svg>Restore to Applied</button>`;
   }
@@ -1202,18 +1254,43 @@ function openStatusPicker(event, id) {
 function setStatus(id, status, archive) {
   const rec = state.records.find(r => r.id === id);
   if (!rec) return;
+  // If we're moving INTO Rejected and the record isn't already rejected, snapshot
+  // the current stage so we know where in the funnel the rejection happened.
+  if (status === "Rejected" && rec.status !== "Rejected") {
+    // Use the current in-pipeline status as the rejection stage. If the record is
+    // already archived under a different outcome, fall back to the previous stage
+    // we already had stored, or Initial as last resort.
+    const priorStage = rec.archived
+      ? (rec.rejectedAtStage || "Initial application")
+      : (rec.status || "Initial application");
+    rec.rejectedAtStage = priorStage;
+  }
+  // If moving AWAY from Rejected (to another outcome or back to pipeline), keep
+  // the stage stored — it's harmless and recoverable if user changes mind back.
   rec.status = status;
   if (archive && !rec.archived) { rec.archived = true; rec.archivedDate = new Date().toISOString().split("T")[0]; }
   else if (!archive && rec.archived) { rec.archived = false; rec.archivedDate = ""; }
   rec.updatedAt = nowIso();
   document.getElementById("statusPopover").classList.remove("show");
   saveLocal(); queueSync(); render();
-  toast("Updated → " + status);
+  let msg = "Updated → " + status;
+  if (status === "Rejected" && rec.rejectedAtStage) msg += " (" + (STAGE_SHORT[rec.rejectedAtStage] || rec.rejectedAtStage) + ")";
+  toast(msg);
+}
+function setRejectedStage(id, stage) {
+  const rec = state.records.find(r => r.id === id);
+  if (!rec) return;
+  rec.rejectedAtStage = stage;
+  rec.updatedAt = nowIso();
+  document.getElementById("statusPopover").classList.remove("show");
+  saveLocal(); queueSync(); render();
+  toast("Rejected at " + stage);
 }
 function restoreToApplied(id) {
   const rec = state.records.find(r => r.id === id);
   if (!rec) return;
   rec.archived = false; rec.archivedDate = ""; rec.status = "Initial application";
+  rec.rejectedAtStage = ""; // clear stage; new rejection can re-stamp later
   rec.updatedAt = nowIso();
   document.getElementById("statusPopover").classList.remove("show");
   saveLocal(); queueSync(); render();
@@ -1285,10 +1362,16 @@ function clickSort(tab, field) {
 function escapeHtml(s) {
   return String(s || "").replace(/[&<>"']/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 }
-function pillFor(status, archived, id) {
+function pillFor(status, archived, id, rec) {
   const set = archived ? OUTCOMES : STATUSES;
   const found = set.find(s => s.id === status) || { cls: "s-initial" };
-  return `<button class="status-pill ${found.cls}" onclick="openStatusPicker(event, '${id}')" title="Click to change"><span class="pill-dot"></span>${escapeHtml(status || "—")}<span class="pill-arrow">▾</span></button>`;
+  const pill = `<button class="status-pill ${found.cls}" onclick="openStatusPicker(event, '${id}')" title="Click to change"><span class="pill-dot"></span>${escapeHtml(status || "—")}<span class="pill-arrow">▾</span></button>`;
+  // For Rejected outcomes, append a small subtitle showing the stage of rejection
+  if (status === "Rejected" && rec && rec.rejectedAtStage) {
+    const sub = STAGE_SHORT[rec.rejectedAtStage] || ("after " + rec.rejectedAtStage);
+    return `<div class="status-cell-stack">${pill}<span class="status-substage">${escapeHtml(sub)}</span></div>`;
+  }
+  return pill;
 }
 function fitStars(n, id) {
   n = +n || 0;
@@ -1339,7 +1422,7 @@ function renderApplied() {
   tbody.innerHTML = rows.map(r => `<tr>
     ${editableCell(r, 'title', 'title-cell')}
     ${editableCell(r, 'company', 'company-cell')}
-    <td>${pillFor(r.status, false, r.id)}</td>
+    <td>${pillFor(r.status, false, r.id, r)}</td>
     <td>${fitStars(r.fit, r.id)}</td>
     ${editableCell(r, 'applied', 'date-cell hide-mobile')}
     ${editableCell(r, 'code', 'code-cell hide-mobile')}
@@ -1364,7 +1447,7 @@ function renderOutcomes() {
   tbody.innerHTML = rows.map(r => `<tr>
     ${editableCell(r, 'title', 'title-cell')}
     ${editableCell(r, 'company', 'company-cell')}
-    <td>${pillFor(r.status, true, r.id)}</td>
+    <td>${pillFor(r.status, true, r.id, r)}</td>
     <td>${fitStars(r.fit, r.id)}</td>
     ${editableCell(r, 'applied', 'date-cell hide-mobile')}
     ${editableCell(r, 'archivedDate', 'date-cell hide-mobile')}
@@ -1372,16 +1455,63 @@ function renderOutcomes() {
   </tr>`).join("");
 }
 function renderStats() {
-  const active = state.records.filter(r => !r.archived).length;
-  const interviewing = state.records.filter(r => !r.archived && ((r.status||"").toLowerCase().includes("interview") || r.status === "Final round" || r.status === "Offer" || r.status === "Screening")).length;
-  const outcomes = state.records.filter(r => r.archived).length;
-  const beyondInitial = state.records.filter(r => r.status && r.status !== "Initial application").length;
-  const total = state.records.length;
-  const rate = total > 0 ? Math.round((beyondInitial / total) * 100) + "%" : "—";
+  const recs = state.records;
+  const active = recs.filter(r => !r.archived).length;
+  const interviewing = recs.filter(r => !r.archived && ((r.status||"").toLowerCase().includes("interview") || r.status === "Final round" || r.status === "Offer" || r.status === "Screening")).length;
+  const outcomes = recs.filter(r => r.archived).length;
+  const total = recs.length;
+
+  // === Response rate (fixed) ===
+  // A "response" means the application progressed past Initial application at
+  // some point — i.e. the company actually engaged. Two things count as
+  // responses:
+  //   (a) currently in the pipeline at any non-Initial stage
+  //   (b) archived under any outcome, but where the journey went past Initial
+  //       (so a cold rejection — status Rejected with rejectedAtStage =
+  //       "Initial application" — does NOT count as a response)
+  function reachedPastInitial(r) {
+    if (!r.archived) {
+      return r.status && r.status !== "Initial application";
+    }
+    // Archived. If it's a Rejected record, we trust rejectedAtStage; cold reject
+    // (rejected from Initial) = no response. Anything else archived (Withdrew,
+    // Accepted, Job declined, or rejection past Initial) = a response did occur.
+    if (r.status === "Rejected") {
+      return (r.rejectedAtStage && r.rejectedAtStage !== "Initial application");
+    }
+    // Withdrew / Accepted / Job declined — these only happen if there was prior
+    // engagement, so count as responses.
+    return true;
+  }
+  const responses = recs.filter(reachedPastInitial).length;
+  const respRate = total > 0 ? Math.round((responses / total) * 100) + "%" : "—";
+  document.getElementById("statRate").textContent = respRate;
+  document.getElementById("statRateSub").textContent = total > 0 ? `${responses}/${total} responded` : "past initial";
+
+  // === Interview rate (new) ===
+  // Reached any interview round (1/2/3, Final, Offer, Accepted) OR was rejected
+  // FROM such a stage. Excludes Screening — that's pre-interview.
+  const INTERVIEW_STAGES = new Set([
+    "Interview round 1","Interview round 2","Interview round 3","Final round","Offer","Accepted"
+  ]);
+  function reachedInterview(r) {
+    if (INTERVIEW_STAGES.has(r.status)) return true;
+    if (r.status === "Rejected" && r.rejectedAtStage && INTERVIEW_STAGES.has(r.rejectedAtStage)) return true;
+    // Withdrew / Job declined: only count if we have evidence they reached an
+    // interview. Without a separate stage field for these, we can't know — but
+    // Job declined implies an offer existed, so count it.
+    if (r.status === "Job declined") return true;
+    return false;
+  }
+  const interviewReached = recs.filter(reachedInterview).length;
+  const ivRate = total > 0 ? Math.round((interviewReached / total) * 100) + "%" : "—";
+  document.getElementById("statInterviewRate").textContent = ivRate;
+  document.getElementById("statInterviewRateSub").textContent = total > 0 ? `${interviewReached}/${total} reached interview` : "reached interview";
+
   document.getElementById("statActive").textContent = active;
   document.getElementById("statInterview").textContent = interviewing;
   document.getElementById("statOutcomes").textContent = outcomes;
-  document.getElementById("statRate").textContent = rate;
+
   // Outreach
   const contacts = state.contacts || [];
   const followupsDue = contacts.filter(c => {
@@ -1598,7 +1728,7 @@ function openSettings() {
 }
 function closeSettings() { document.getElementById("settingsModal").classList.remove("show"); }
 function exportCSV() {
-  const headers = ["id","title","company","link","code","applied","deadline","username","notes","fit","status","archived","archivedDate","updatedAt"];
+  const headers = ["id","title","company","link","code","applied","deadline","username","notes","fit","status","rejectedAtStage","archived","archivedDate","updatedAt"];
   const csv = [headers.join(",")].concat(state.records.map(r => headers.map(h => csvCell(r[h])).join(","))).join("\n");
   const blob = new Blob([csv], { type: "text/csv" });
   const url = URL.createObjectURL(blob);
@@ -1641,11 +1771,14 @@ function importCSV(event) {
         obj.archived = obj.archived === "true" || obj.archived === true;
         if (!obj.id) obj.id = "rec_" + Date.now() + "_" + i;
         if (!obj.updatedAt) obj.updatedAt = nowIso();
+        if (!obj.rejectedAtStage) obj.rejectedAtStage = "";
         ["applied","deadline","archivedDate"].forEach(k => { if (obj[k]) obj[k] = toIsoDate(obj[k]); });
         recs.push(obj);
       }
       if (confirm(`Import ${recs.length} records? This will replace your current data.`)) {
-        state.records = recs; saveLocal(); queueSync(); render();
+        state.records = recs;
+        migrateRecords(); // catches imported legacy "Job declined" rows too
+        saveLocal(); queueSync(); render();
         toast("Imported " + recs.length + " records");
       }
     } catch (err) { console.error(err); toast("Import failed"); }
@@ -1719,6 +1852,7 @@ function init() {
   document.documentElement.setAttribute("data-theme", savedTheme);
 
   loadLocal();
+  migrateRecords();
   if (state.syncUrl) { updateSyncStatus("connected", "Connected"); syncNow(true); }
   else { updateSyncStatus("", "Local only"); }
   const today = new Date().toISOString().split("T")[0];
